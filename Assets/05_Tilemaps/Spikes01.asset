@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Square
+  m_Name: Spikes01
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 7482667652216324306, guid: a34f9f5a501df2048a10ae090162652a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cb5b873b37f21994eadeccb22aa43b37, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
