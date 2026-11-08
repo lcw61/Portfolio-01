@@ -81,8 +81,11 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
-            jumpCount = 0;
-            rigid.velocity = Vector2.zero;
+            if (collision.gameObject.transform.position.y - offset < transform.position.y)
+            {
+                jumpCount = 0;
+                rigid.velocity = Vector2.zero;
+            }
         }
     }
 
