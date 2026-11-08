@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 1)
+        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
         {
             jumpCount++;
             rigid.velocity = Vector2.zero;
@@ -85,17 +85,6 @@ public class Player : MonoBehaviour
             {
                 jumpCount = 0;
                 rigid.velocity = Vector2.zero;
-            }
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
-        {
-            if (collision.gameObject.transform.position.y - offset < transform.position.y)
-            {
-                jumpCount = 0;
             }
         }
     }
