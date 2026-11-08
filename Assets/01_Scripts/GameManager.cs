@@ -1,18 +1,60 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static GameManager Instance { get; private set; }
+
+    [SerializeField] private Player player;
+
+    [SerializeField] private float damageOverTime;
+    private bool isGameover;
+    public bool IsGameover => isGameover;
+
+    private WaitForSeconds updateDelayTime = new WaitForSeconds(0.1f);
+
+    private void Awake()
     {
-        
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        isGameover = false;
+
+        StartCoroutine(HpUpdateRoutine());
+    }
+
+    public void GameOver()
+    {
+        isGameover = true;
+    }
+
+    private IEnumerator HpUpdateRoutine()
+    {
+        while (!isGameover)
+        {
+            UIManager.Instance.SliderUpdate(SliderType.Hp, player.CurHealth, player.Maxhealth);
+
+            yield return updateDelayTime;
+
+            player.OnDamageOverTime(damageOverTime);
+
+            UIManager.Instance.SliderUpdate(SliderType.Hp, player.CurHealth, player.Maxhealth);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

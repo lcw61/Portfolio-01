@@ -13,10 +13,15 @@ public class Player : MonoBehaviour
     private CapsuleCollider2D coll; // 애니메이터 에서? or 동작 할때 바꾸기.. 고민중
     private SpriteRenderer spriter;
 
-    [SerializeField] private float health; // 게임매니저로 옮기는게 나은듯?
+    [SerializeField] private float maxHealth;
+    [SerializeField] private float curHealth;
+
     [SerializeField] private float jumpHeight;
     [SerializeField] private int jumpCount;
     [SerializeField] private float offset = 2.01f;
+
+    public float Maxhealth => maxHealth;
+    public float CurHealth => curHealth;
 
     private void Awake()
     {
@@ -25,8 +30,16 @@ public class Player : MonoBehaviour
         spriter = GetComponent<SpriteRenderer>();
     }
 
+    private void Start()
+    {
+        curHealth = maxHealth;
+    }
+
     private void Update()
     {
+        if (GameManager.Instance.IsGameover)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
         {
             jumpCount++;
@@ -45,15 +58,25 @@ public class Player : MonoBehaviour
 
     public void Hit(float damage)
     {
-        health -= damage;
+        curHealth -= damage;
 
-        if (health <= 0)
+        if (curHealth <= 0)
         {
             Dead();
         }
         else
         {
             StartCoroutine(HitEffect());
+        }
+    }
+
+    public void OnDamageOverTime(float damage)
+    {
+        curHealth -= damage;
+
+        if (curHealth <= 0)
+        {
+            Dead();
         }
     }
 
@@ -74,7 +97,8 @@ public class Player : MonoBehaviour
 
     public void Dead()
     {
-        Time.timeScale = 0f;
+        rigid.simulated = false;
+        GameManager.Instance.GameOver();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -93,7 +117,7 @@ public class Player : MonoBehaviour
     {
         if (collision.CompareTag("Spikes"))
         {
-            Hit(1);
+            Hit(10);
         }
         else if (collision.CompareTag("Deadline"))
         {
