@@ -64,9 +64,12 @@ public class GameManager : MonoBehaviour
     {
         while (!isGameover)
         {
+            yield return updateInterval;
+
             player.OnDamageOverTime(damageOverTime);
 
-            yield return updateInterval;
+            if (IsGameover)
+                break;
         }
     }
 
@@ -76,7 +79,7 @@ public class GameManager : MonoBehaviour
         {
             UIManager.Instance.TextUpdate(TextType.Score, Mathf.FloorToInt(DistanceScore + itemScore));
             UIManager.Instance.SliderUpdate(SliderType.Hp, player.CurHealth, player.MaxHealth);
-            UIManager.Instance.SliderUpdate(SliderType.Progress, curDistance, maxDistance[stage]);
+            UIManager.Instance.SliderUpdate(SliderType.Progress, curDistance, MaxDistance);
 
             yield return updateInterval;
         }

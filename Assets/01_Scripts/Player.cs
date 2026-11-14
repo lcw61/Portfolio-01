@@ -30,17 +30,14 @@ public class Player : MonoBehaviour
         curHealth = maxHealth;
     }
 
-    private void Start()
-    {
-
-    }
-
     private void Update()
     {
         if (GameManager.Instance.IsGameover)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        bool jump = Input.GetKeyDown(KeyCode.Space);
+
+        if (jump)
         {
             jumpBufferTimer = jumpBufferDuration;
         }
@@ -49,7 +46,7 @@ public class Player : MonoBehaviour
             jumpBufferTimer = Mathf.Max(0f, jumpBufferTimer - Time.deltaTime);
         }
 
-        if ((Input.GetKeyDown(KeyCode.Space) || jumpBufferTimer > 0f) && jumpCount < 2)
+        if ((jump || jumpBufferTimer > 0f) && jumpCount < 2)
         {
             jumpBufferTimer = 0f;
             jumpCount++;

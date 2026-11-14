@@ -715,7 +715,7 @@ MonoBehaviour:
   sliderHp: {fileID: 1543756341}
   sliderProgress: {fileID: 1998975849}
   textRunScore: {fileID: 613928120}
-  textRunGold: {fileID: 0}
+  textRunGold: {fileID: 898250160}
 --- !u!4 &159837069
 Transform:
   m_ObjectHideFlags: 0
@@ -4918,10 +4918,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1461261094}
-  damageOverTime: 0.1
   maxDistance:
   - 800
   curDistance: 0
+  damageOverTime: 0.1
   distancePerSecond: 8
   scorePerDistance: 5
 --- !u!1001 &980624351
