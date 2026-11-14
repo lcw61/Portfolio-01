@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -10,7 +9,6 @@ public class Player : MonoBehaviour
     // 무적 아이템 획득 -> 무적
 
     private Rigidbody2D rigid;
-    private CapsuleCollider2D coll; // 애니메이터 에서? or 동작 할때 바꾸기.. 고민중
     private SpriteRenderer spriter;
 
     [SerializeField] private float maxHealth;
@@ -18,21 +16,23 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float jumpHeight;
     [SerializeField] private int jumpCount;
-    [SerializeField] private float offset = 2.01f;
+    [SerializeField, Min(0f)] private float jumpBufferDuration; // 점프 보정
 
-    public float Maxhealth => maxHealth;
+    private float jumpBufferTimer;
+
+    public float MaxHealth => maxHealth;
     public float CurHealth => curHealth;
 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
-        coll = GetComponent<CapsuleCollider2D>();
         spriter = GetComponent<SpriteRenderer>();
+        curHealth = maxHealth;
     }
 
     private void Start()
     {
-        curHealth = maxHealth;
+
     }
 
     private void Update()
@@ -40,8 +40,18 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.IsGameover)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
+            jumpBufferTimer = jumpBufferDuration;
+        }
+        else if (jumpBufferTimer > 0f)
+        {
+            jumpBufferTimer = Mathf.Max(0f, jumpBufferTimer - Time.deltaTime);
+        }
+
+        if ((Input.GetKeyDown(KeyCode.Space) || jumpBufferTimer > 0f) && jumpCount < 2)
+        {
+            jumpBufferTimer = 0f;
             jumpCount++;
             rigid.velocity = Vector2.zero;
             Jump();
@@ -62,7 +72,7 @@ public class Player : MonoBehaviour
 
         if (curHealth <= 0)
         {
-            Dead();
+            Die();
         }
         else
         {
@@ -76,7 +86,7 @@ public class Player : MonoBehaviour
 
         if (curHealth <= 0)
         {
-            Dead();
+            Die();
         }
     }
 
@@ -86,16 +96,16 @@ public class Player : MonoBehaviour
 
         color.a = 0.5f;
         spriter.color = color;
-        // 레이어 변경
+        gameObject.tag = "PlayerHit";
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(1f);
 
         color.a = 1f;
         spriter.color = color;
-        // 원래 레이어로 변경
+        gameObject.tag = "Player";
     }
 
-    public void Dead()
+    public void Die()
     {
         rigid.simulated = false;
         GameManager.Instance.GameOver();
@@ -103,25 +113,35 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Platform"))
+        if (!collision.gameObject.CompareTag("Platform"))
+            return;
+
+        for (int i = 0; i < collision.contactCount; i++) // 플랫폼에 '착지'했을 때만 점프 초기화
         {
-            if (collision.gameObject.transform.position.y - offset < transform.position.y)
+            ContactPoint2D contact = collision.GetContact(i);
+
+            if (contact.normal.y > 0.5f)
             {
                 jumpCount = 0;
                 rigid.velocity = Vector2.zero;
+                break;
             }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Spikes"))
+        if (!gameObject.CompareTag("PlayerHit"))
         {
-            Hit(10);
+            if (collision.CompareTag("Spikes"))
+            {
+                Hit(10);
+            }
         }
-        else if (collision.CompareTag("Deadline"))
+
+        if (collision.CompareTag("Deadline"))
         {
-            Dead();
+            Die();
         }
     }
 }
