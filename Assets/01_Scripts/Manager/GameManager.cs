@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Player player;
 
+    private bool isPause;
     private bool isGameover;
     public bool IsGameover => isGameover;
 
@@ -58,6 +60,18 @@ public class GameManager : MonoBehaviour
 
         curDistance += Time.deltaTime * distancePerSecond;
         totalDistance += Time.deltaTime * distancePerSecond;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isPause)
+            {
+                GamePause();
+            }
+            else if(isPause)
+            {
+                GameResume();
+            }
+        }
     }
 
     private IEnumerator DamageOverTime()
@@ -96,9 +110,24 @@ public class GameManager : MonoBehaviour
         itemScore += amount;
     }
 
-    public void GameOver()
+    public void GameOver() // 바로 씬 옮기지 말고 약간의 대기시간 주기
     {
         isGameover = true;
+        SceneManager.LoadScene(2);
+    }
+
+    private void GamePause()
+    {
+        isPause = true;
+        Time.timeScale = 0f;
+        UIManager.Instance.ShowPauseUI();
+    }
+
+    private void GameResume() // 코루틴 이용해서 3, 2, 1 이후에 시작 하도록 바꾸기
+    {
+        isPause = false;
+        Time.timeScale = 1f;
+        UIManager.Instance.ClosePauseUI();
     }
 
     private void OnDestroy()

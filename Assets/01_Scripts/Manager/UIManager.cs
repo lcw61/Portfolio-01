@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
+    [SerializeField] private GameObject pausePanel;
+
     [SerializeField] private Slider sliderHp;
     [SerializeField] private Slider sliderProgress;
     [SerializeField] private TextMeshProUGUI textRunScore;
@@ -52,6 +54,16 @@ public class UIManager : MonoBehaviour
                 textRunGold.text = "GOLD:" + value.ToString();
                 break;
         }
+    }
+
+    public void ShowPauseUI()
+    {
+        pausePanel.SetActive(true);
+    }
+
+    public void ClosePauseUI()
+    {
+        pausePanel.SetActive(false);
     }
 
     private void OnDestroy()

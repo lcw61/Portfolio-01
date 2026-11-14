@@ -8,6 +8,8 @@ TagManager:
   - Spikes
   - Deadline
   - PlayerHit
+  - Star
+  - Coin
   layers:
   - Default
   - TransparentFX
