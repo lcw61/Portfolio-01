@@ -9,7 +9,9 @@ public class Player : MonoBehaviour
     // 公利 酒捞袍 裙垫 -> 公利
 
     private Rigidbody2D rigid;
+    private BoxCollider2D coll;
     private SpriteRenderer spriter;
+    private Animator anim;
 
     [SerializeField] private float maxHealth;
     [SerializeField] private float curHealth;
@@ -23,10 +25,15 @@ public class Player : MonoBehaviour
     public float MaxHealth => maxHealth;
     public float CurHealth => curHealth;
 
+    private bool isSliding;
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
+        coll = GetComponent<BoxCollider2D>();
         spriter = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+
         curHealth = maxHealth;
     }
 
@@ -53,6 +60,19 @@ public class Player : MonoBehaviour
             rigid.velocity = Vector2.zero;
             Jump();
         }
+
+        isSliding = Input.GetKey(KeyCode.LeftControl);
+        anim.SetBool("Slide", isSliding);
+
+        if (isSliding)
+        {
+            Slide();
+        }
+        else
+        {
+            coll.size = new Vector2(0.7f, 1.6f);
+            coll.offset = new Vector2(0.1f, -0.2f);
+        }
     }
 
     private void Jump()
@@ -61,6 +81,12 @@ public class Player : MonoBehaviour
         float jumpSpeed = Mathf.Sqrt(2f * gravity * jumpHeight);
 
         rigid.velocity = new Vector2(rigid.velocity.x, jumpSpeed);
+    }
+
+    private void Slide()
+    {
+        coll.size = new Vector2(1f, 0.9f);
+        coll.offset = new Vector2(0.1f, -0.55f);
     }
 
     public void Hit(float damage)
